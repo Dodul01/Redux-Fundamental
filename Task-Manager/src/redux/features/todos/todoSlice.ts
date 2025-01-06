@@ -10,13 +10,13 @@ interface InitialState {
 const initialState: InitialState = {
   tasks: [
     {
-      id: 'jalksdjflkjsdf',
-      isCompleted: false,
-      title: 'test delete',
-      description: 'test desc',
-      priority: 'High',
-      dueDate: '34243234'
-    }
+      id: "jalksdjflkjsdf",
+      isCompleted: true,
+      title: "test delete",
+      description: "test desc",
+      priority: "High",
+      dueDate: "34243234",
+    },
   ],
   filter: "all",
 };
@@ -35,16 +35,39 @@ const todoSlice = createSlice({
       const taskData = createTask(action.payload);
       state.tasks.push(taskData);
     },
+    toggleCompleteState: (state, action: PayloadAction<string>) => {
+      state.tasks.forEach((task) =>
+        task.id === action.payload
+          ? (task.isCompleted = !task.isCompleted)
+          : task
+      );
+    },
+    deleteTask: (state, action: PayloadAction<string>) => {
+      state.tasks = state.tasks.filter((task) => task.id !== action.payload);
+    },
+    updateFilter: (state, action: PayloadAction<"all" | "Low" | "Medium" | "High">) =>{
+      state.filter = action.payload;
+    }
   },
 });
 
 export const selectTasks = (state: RootState) => {
-  return state.todo.tasks;
+  const filter = state.todo.filter;
+
+  if(filter === 'Low'){
+    return state.todo.tasks.filter(task => task.priority === 'Low');
+  }else if(filter === 'High'){
+    return state.todo.tasks.filter(task => task.priority === 'High');
+  }else if(filter === 'Medium'){
+    return state.todo.tasks.filter(task => task.priority === 'Medium');
+  }else{
+    return state.todo.tasks;
+  }
 };
 
 export const selectFilter = (state: RootState) => {
   return state.todo.filter;
 };
 
-export const { addTasks } = todoSlice.actions;
+export const { addTasks, toggleCompleteState , deleteTask, updateFilter} = todoSlice.actions;
 export default todoSlice.reducer;
