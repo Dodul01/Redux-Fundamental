@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -32,13 +32,16 @@ import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import calenderIcon from "@/assets/calender.svg";
-import { format } from "date-fns"
+import { format } from "date-fns";
+import { useAppDispatch } from "@/redux/hook";
+import { addTasks } from "@/redux/features/todos/todoSlice";
 
 const AddTaskModal = () => {
   const form = useForm();
+  const dispatch = useAppDispatch();
 
-  const onSubmit = (data: ITask) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    dispatch(addTasks(data as ITask));
   };
 
   return (
@@ -86,7 +89,7 @@ const AddTaskModal = () => {
             />
             <FormField
               control={form.control}
-              name="dob"
+              name="dueDate"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Due Date</FormLabel>
@@ -118,9 +121,7 @@ const AddTaskModal = () => {
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
-                        disabled={(date) =>
-                          date < new Date() 
-                        }
+                        disabled={(date) => date < new Date()}
                         initialFocus
                       />
                     </PopoverContent>
@@ -134,10 +135,10 @@ const AddTaskModal = () => {
             />
             <FormField
               control={form.control}
-              name="email"
+              name="priority"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Priority</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
